@@ -6,7 +6,7 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 16:48:37 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/03/15 23:48:31 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/03/30 01:15:07 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ char *spilt(char *str)
 	return (str);
 }
 
-char *cutbuffer(char **buffer, int *nb_bytes, int fd, int cnt)
+char *cutbuffer(char *buffer, int *nb_bytes, int fd, int cnt)
 {
 	char	*ligne;
 	char	*temp;
