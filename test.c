@@ -8,18 +8,17 @@
 
 char *join(const char* s1, const char* s2)
 {
-    char* result = malloc(strlen(s1) + strlen(s2) + 1);
+	char*	result = malloc(strlen(s1) + strlen(s2) + 1);
 
-    if (result)
-    {
-        strcpy(result, s1);
-        strcat(result, s2);
-    }
-
-    return result;
+	if (result)
+	{
+		strcpy(result, s1);
+		strcat(result, s2);
+	}
+	return (result);
 }
 
-char *split(char *str)
+void split(char *str)
 {
 	int i;
 
@@ -27,38 +26,52 @@ char *split(char *str)
 	while (str[i] != '\n' && str[i] != '\0')
 		i++;
 	str[i] = '\0';
-	return (str);
 }
+
+
 
 int main()
 {
-    int fd;
-    static char *str = NULL;
-    char *temp;
-    int buffersize;
-    char *buf;
-    int i =1;
-    int j = 0;
+	int			fd;
+	static char	*str = NULL;
+	char		*temp;
+	int			buffersize;
+	char		*buf;
+	int			j = 0;
+	int			ret;
 
-
-    buffersize = 10;
+	buffersize = 3;
 
 // OUVERTURE
-    fd = open("test.txt", O_RDONLY);
+	fd = open("test.txt", O_RDONLY);
+	if (fd == -1)
+	{
+		printf("ERREUR d'ouverture de fichier");
+		return (1);
+	}
 // LECTURE
-    str = malloc(11);
-    while(read(fd, str, 10))
-    {
-        while (str[j++])
-            if (str[j] == '\n')
-                str = split(str);
 
-        buf = malloc(buffersize + strlen(str) *i);
-        buf = join(temp, str);
-        temp = buf;
-        i++;
-        printf("%s\n", buf);
-    }
-        
-    return (0);
+	str = malloc(buffersize + 1);
+	while((ret = read(fd, str, buffersize)))
+	{
+		str[ret] = '\0';
+		j = 0;
+		while (str[j])
+		{
+			if (str[j] == '\n')
+			{
+				str[j] = '\0';
+				buf = malloc(strlen(temp) + strlen(str));
+				buf = join(temp, str);
+				printf("\n****%s****\n", buf);
+			}
+			j++;
+		}
+
+		buf = malloc(strlen(str) + strlen(temp)  + 1);
+		buf = join(temp, str);
+		temp = buf;
+	}
+
+	return (0);
 }
