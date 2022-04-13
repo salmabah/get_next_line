@@ -5,11 +5,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include "get_next_line.h"
 
-char *join(const char* s1, const char* s2)
+#define BUFFER_SIZE 3
+
+char	*join(const char *s1, const char *s2)
 {
-	char*	result = malloc(strlen(s1) + strlen(s2) + 1);
-
+	char	*result = malloc(strlen(s1) + strlen(s2) + 1);
 	if (result)
 	{
 		strcpy(result, s1);
@@ -18,7 +20,7 @@ char *join(const char* s1, const char* s2)
 	return (result);
 }
 
-void split(char *str)
+void	split(char *str)
 {
 	int i;
 
@@ -28,50 +30,93 @@ void split(char *str)
 	str[i] = '\0';
 }
 
+char *substr(char const *s, unsigned int start, size_t len)
+{
+	char *sub;
+	int i;
 
+	i = 0;
+	if (!s)
+		return (0);
+	if (strlen(s) < start + len)
+		len = strlen(s) - start;
+	if (start >= strlen(s))
+		return (strdup(""));
+	sub = (char *)malloc(sizeof(char) * (len + 1));
+	if (!sub)
+		return (0);
+	if (len < (strlen(s) - start))
+	{
+		while (len > 0)
+		{
+			sub[i++] = s[start++];
+			len--;
+		}
+		sub[i] = '\0';
+	}
+	else
+		sub = memcpy(sub, s + start, len);
+	return (sub);
+}
+
+char	*get_next_line(int fd)
+{
+	char *str = NULL;
+	char *temp ;
+	static char *reste;
+	int j;
+	int ret;
+
+	j = 0;
+	str = malloc(BUFFER_SIZE + 1);
+	if (!reste)
+		reste = strdup("");
+	while ((ret = read(fd, str, BUFFER_SIZE)))
+	{
+		str[ret] = '\0';
+		j = 0;
+		reste = join(reste, str);
+		while (reste[j])
+		{
+			if (reste[j] == '\n')
+			{
+				temp = reste;
+				reste = substr(reste, j + 1, strlen(reste + j));
+				temp[j + 1] = '\0';
+				return temp;
+			}
+			j++;
+		}
+	}
+	if (ret == 0)
+		return reste;
+	return (reste);
+}
 
 int main()
 {
-	int			fd;
-	static char	*str = NULL;
-	char		*temp;
-	int			buffersize;
-	char		*buf;
-	int			j = 0;
-	int			ret;
+	int fd;
+	char *ligne;
 
-	buffersize = 3;
-
-// OUVERTURE
+	// OUVERTURE
 	fd = open("test.txt", O_RDONLY);
 	if (fd == -1)
 	{
 		printf("ERREUR d'ouverture de fichier");
 		return (1);
 	}
-// LECTURE
-
-	str = malloc(buffersize + 1);
-	while((ret = read(fd, str, buffersize)))
-	{
-		str[ret] = '\0';
-		j = 0;
-		while (str[j])
-		{
-			if (str[j] == '\n')
-			{
-				str[j] = '\0';
-				buf = malloc(strlen(temp) + strlen(str));
-				buf = join(temp, str);
-				printf("\n****%s****\n", buf);
-			}
-			j++;
-		}
-
-		buf = malloc(strlen(str) + strlen(temp)  + 1);
-		buf = join(temp, str);
-		temp = buf;
-	}
-
+	// LECTURE
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
 	return (0);
 }
