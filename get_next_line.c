@@ -5,16 +5,16 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/13 16:48:37 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/03/30 01:15:07 by sbahraou         ###   ########.fr       */
+/*   Created: 2022/04/13 18:40:20 by sbahraou          #+#    #+#             */
+/*   Updated: 2022/04/16 04:21:34 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <string.h>
-#include <stdlib.h>
 
-char *spilt(char *str)
+
+
+void	split(char *str)
 {
 	int i;
 
@@ -22,112 +22,99 @@ char *spilt(char *str)
 	while (str[i] != '\n' && str[i] != '\0')
 		i++;
 	str[i] = '\0';
-	return (str);
 }
 
-char *cutbuffer(char *buffer, int *nb_bytes, int fd, int cnt)
+char *substr(char const *s, unsigned int start, size_t len)
 {
-	char	*ligne;
-	char	*temp;
-	int		i;
+	char *sub;
+	int i;
 
-	// if (ft_strchr(buffer, '\n') == NULL)
-	// {
-	// 	ligne = ft_strdup("");
-	// }
 	i = 0;
-	while (buffer[i] != '\n' && buffer[i])
-		i++;
-	// ligne = ft_substr(buffer, 0, i);
-	// if (i == BUF_SIZE)
-	// {
-		temp = *buffer;
-		printf("cnt : %d", cnt);
-		printf("\nold buffer : %s\n", temp);
-		*buffer = malloc(BUF_SIZE * cnt);
-		ligne = malloc(BUF_SIZE);
-		if (ligne != NULL && buffer != NULL)
+	if (!s)
+		return (0);
+	if (ft_strlen(s) < start + len)
+		len = ft_strlen(s) - start;
+	if (start >= ft_strlen(s))
+		return (ft_strdup(""));
+	sub = (char *)malloc(sizeof(char) * (len + 1));
+	if (!sub)
+		return (0);
+	if (len < (ft_strlen(s) - start))
+	{
+		while (len > 0)
 		{
-			*nb_bytes = read(fd, ligne, BUF_SIZE);
-			*buffer = ft_strjoin(temp, ligne);
-			printf("\nnew buffer : %s\n", *buffer);
-			// *nb_bytes = 0;
+			sub[i++] = s[start++];
+			len--;
 		}
-		// buffer = malloc(strlen(temp) + BUF_SIZE);
-		// buffer = ft_strjoin(temp, ligne);
-	// }
-	return (*buffer);
+		sub[i] = '\0';
+	}
+	else
+		sub = ft_memcpy(sub, s + start, len);
+	return (sub);
 }
 
 char	*get_next_line(int fd)
 {
-	int		resultat;
-	char	*buffer;
-	char	*ligne;
-	int		nb_bytes;
-	int		cnt;
+	char *str;
+	char *temp ;
+	static char *reste;
+	int j;
+	int ret;
 
-	cnt = 1;
-	if ((buffer = (char *)malloc(sizeof(char) * BUF_SIZE + 1)) == NULL)
-		return (NULL);
-    nb_bytes = read(fd, buffer, BUF_SIZE);
-	printf("\n%s %d", buffer, nb_bytes);
-	while (nb_bytes > 0)
+	j = 0;
+	str = malloc(BUFFER_SIZE + 1);
+	if (!reste)
+		reste = ft_strdup("");
+	while ((ret = read(fd, str, BUFFER_SIZE)))
 	{
-		cnt++;
-		ligne = cutbuffer(buffer, &nb_bytes, fd, cnt);
+		str[ret] = '\0';
+		j = 0;
+		reste = ft_strjoin(reste, str);
+		while (reste[j])
+		{
+			if (reste[j] == '\n')
+			{
+				temp = reste;
+				// printf("\n trmp : %s\n", temp);
+				reste = substr(reste, j + 1, ft_strlen(reste + j));
+				temp[j + 1] = '\0';
+				return temp;
+			}
+			j++;
+		}
 	}
-	return (ligne);
+	free(str);
+	// if (ret == 0)
+	// 	return reste;
+	// return (NULL);
+	return (reste);
 }
 
 int main()
 {
-	FILE	*f;
-	int		fd;
-	// char	*line;
-
-	f = fopen("test.txt", "r");
-	fd = fileno(f);
-	// line = get_next_line(fd);
-	printf("%s", get_next_line(fd));
+	int fd;
+	char *ligne;
+	// OUVERTURE
+	fd = open("test.txt", O_RDONLY);
+	// fd = open("41_no_nl", O_RDWR);
+	if (fd == -1)
+	{
+		printf("ERREUR d'ouverture de fichier");
+		return (1);
+	}
+	// LECTURE
+	// gnl(0, "01234567890123456789012345678901234567890\n")
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
+	ligne = get_next_line(fd);
+	printf("%s", ligne);
 	return (0);
 }
-
-// int main()
-// {
-// 	char ligne[25] = "Salma bahraoui";
-// 	printf("%s\n", ligne);
-// 	ligne[5]='\0';
-// 	printf("%s", ligne);
-// 	int i = 0;
-// 	char str[4] = {'b','o','n', '\0'};
-// 	printf("%s", str);
-// 	while (str[i] != '\0')
-// 		i++;
-// 	printf("%d", i);
-// 	return (0);
-// }
-// int	main()
-// {
-// 	char	buf[BUF_SIZE];
-// 	ssize_t	octet_lus;
-// 	int		fd;
-// 	// char	*buf;
-// 	fd = open("test.txt", O_RDONLY);
-
-// 	printf("le nombre d'octets : %d\tfile descriptor : %d", BUF_SIZE, fd);
-// 	if (fd == -1)
-// 	{
-// 		printf("erreur");
-// 		return (1);
-// 	}
-// 	// octet_lus = read(fd, buf, noctets);
-// 	// buf = malloc(BUF_SIZE);
-// 	while ((octet_lus = read(fd, buf, noctets)) > 0)
-// 	{
-// 		printf("%s", strchr(buf, '\n'));
-// 	}
-// 	buf[octet_lus] = '\0';
-// 	printf("\n%s\noctets lus : %zd", buf, octet_lus);
-// 	return (0);
-// }
