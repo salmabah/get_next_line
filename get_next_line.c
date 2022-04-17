@@ -6,12 +6,12 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/13 18:40:20 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/16 04:21:34 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/17 03:26:11 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
+#include <string.h>
 
 
 void	split(char *str)
@@ -60,40 +60,75 @@ char	*get_next_line(int fd)
 	static char *reste;
 	int j;
 	int ret;
+	char *nstr;
+	int flag;
 
+	flag = 0;
 	j = 0;
 	str = malloc(BUFFER_SIZE + 1);
-	if (!reste)
+	if (reste == NULL)
 		reste = ft_strdup("");
 	while ((ret = read(fd, str, BUFFER_SIZE)))
 	{
 		str[ret] = '\0';
 		j = 0;
+		// nstr = reste;
+		// free(reste);
 		reste = ft_strjoin(reste, str);
 		while (reste[j])
 		{
+			// printf("\nreste[%d] = %c\n", j, reste[j]);
 			if (reste[j] == '\n')
 			{
 				temp = reste;
 				// printf("\n trmp : %s\n", temp);
-				reste = substr(reste, j + 1, ft_strlen(reste + j));
+				reste = substr(reste, j + 1, ft_strlen(reste + j + 1));
+				// temp[j] = '\n';
 				temp[j + 1] = '\0';
-				return temp;
+				// printf("\n%s", reste);
+				return (temp);
 			}
+			flag = 1;
 			j++;
 		}
 	}
+	
 	free(str);
-	// if (ret == 0)
-	// 	return reste;
-	// return (NULL);
-	return (reste);
+		// reste = ft_strjoin(reste, str);
+	j = 0;
+	while (reste[j])
+		{
+			// printf("\nreste[%d] = %c\n", j, reste[j]);
+			if (reste[j] == '\n')
+			{
+				// reste ="y\ntesttest" reste[0]='y' reste[1]='\n' temp="y\ntesttest" reste="testest" temp="y\n"
+				temp = reste;
+				// printf("\n trmp : %s\n", temp);
+				reste = substr(reste, j + 1, ft_strlen(reste + j));
+				// temp[j] = '\n';
+				temp[j + 1] = '\0';
+				return (temp);
+			}
+			flag = 1;
+			j++;
+		}
+	// printf("\n%d %s\n", flag, reste);
+	// if (flag == 1)
+	// 	return (reste);
+
+	// printf("%s", reste);
+	if (j == ft_strlen(reste))
+	{
+		nstr = ft_strdup(reste);
+		reste = NULL;
+		return (nstr);
+	}
+	return (NULL);
 }
 
 int main()
 {
 	int fd;
-	char *ligne;
 	// OUVERTURE
 	fd = open("test.txt", O_RDONLY);
 	// fd = open("41_no_nl", O_RDWR);
@@ -104,17 +139,11 @@ int main()
 	}
 	// LECTURE
 	// gnl(0, "01234567890123456789012345678901234567890\n")
-	ligne = get_next_line(fd);
-	printf("%s", ligne);
-	ligne = get_next_line(fd);
-	printf("%s", ligne);
-	ligne = get_next_line(fd);
-	printf("%s", ligne);
-	ligne = get_next_line(fd);
-	printf("%s", ligne);
-	ligne = get_next_line(fd);
-	printf("%s", ligne);
-	ligne = get_next_line(fd);
-	printf("%s", ligne);
+	printf("\n\n----\n%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	// printf("%s", get_next_line(fd));
 	return (0);
 }
