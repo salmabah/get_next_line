@@ -6,7 +6,7 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/13 18:40:20 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/17 03:26:11 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/20 03:32:26 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ char	*get_next_line(int fd)
 			j++;
 		}
 	}
-	
+
 	free(str);
 		// reste = ft_strjoin(reste, str);
 	j = 0;
@@ -103,7 +103,6 @@ char	*get_next_line(int fd)
 			{
 				// reste ="y\ntesttest" reste[0]='y' reste[1]='\n' temp="y\ntesttest" reste="testest" temp="y\n"
 				temp = reste;
-				// printf("\n trmp : %s\n", temp);
 				reste = substr(reste, j + 1, ft_strlen(reste + j));
 				// temp[j] = '\n';
 				temp[j + 1] = '\0';
@@ -115,7 +114,6 @@ char	*get_next_line(int fd)
 	// printf("\n%d %s\n", flag, reste);
 	// if (flag == 1)
 	// 	return (reste);
-
 	// printf("%s", reste);
 	if (j == ft_strlen(reste))
 	{
@@ -123,7 +121,7 @@ char	*get_next_line(int fd)
 		reste = NULL;
 		return (nstr);
 	}
-	return (NULL);
+	return (reste);
 }
 
 int main()
@@ -139,11 +137,11 @@ int main()
 	}
 	// LECTURE
 	// gnl(0, "01234567890123456789012345678901234567890\n")
-	printf("\n\n----\n%s", get_next_line(fd));
+	printf("\n----\n%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
+	// printf("%s", get_next_line(fd));
 	// printf("%s", get_next_line(fd));
 	return (0);
 }

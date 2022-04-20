@@ -6,7 +6,7 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 16:55:13 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/16 02:06:45 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/20 03:22:20 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdlib.h>
-// #define BUFFER_SIZE 3  
+// #define BUFFER_SIZE 3 
 
 char	*get_next_line(int fd);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
