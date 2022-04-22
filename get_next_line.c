@@ -6,15 +6,14 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/13 18:40:20 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/20 03:32:26 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/22 03:41:07 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <string.h>
 
-
-void	split(char *str)
+void split(char *str)
 {
 	int i;
 
@@ -24,10 +23,10 @@ void	split(char *str)
 	str[i] = '\0';
 }
 
-char *substr(char const *s, unsigned int start, size_t len)
+char	*substr(char const *s, unsigned int start, size_t len)
 {
-	char *sub;
-	int i;
+	char	*sub;
+	int		i;
 
 	i = 0;
 	if (!s)
@@ -53,75 +52,67 @@ char *substr(char const *s, unsigned int start, size_t len)
 	return (sub);
 }
 
-char	*get_next_line(int fd)
+void	function(char **reste, char **temp, int *i)
 {
-	char *str;
-	char *temp ;
-	static char *reste;
-	int j;
-	int ret;
-	char *nstr;
-	int flag;
+	// char	*temp;
+	// int i;
 
-	flag = 0;
-	j = 0;
+	// i = 0;
+	// j = &i;
+	*i = 0;
+	*temp = NULL;
+	// printf("restee : %s\n", *reste);
+	while (*(*reste + *i) != '\0')
+	{
+	// {printf("--%c-- i = %d--\n", *reste[i], i);
+		if (*(*reste + *i) == '\n')
+		{
+			*temp = *reste;
+			// i think free(reste);
+			*reste = substr(*reste, *i + 1, ft_strlen(*reste + *i));
+			*(*temp + *i + 1) = '\0';
+			break ;
+		}
+		(*i)++;
+		// printf("\nj : %d\n", *j);
+	}
+}
+
+char *get_next_line(int fd)
+{
+	char		*temp = NULL;
+	int			j;
+	char		*str;
+	static char *reste;
+	int			ret;
+	char		*nstr;
+
 	str = malloc(BUFFER_SIZE + 1);
+	j = 0;
 	if (reste == NULL)
 		reste = ft_strdup("");
 	while ((ret = read(fd, str, BUFFER_SIZE)))
 	{
 		str[ret] = '\0';
-		j = 0;
-		// nstr = reste;
-		// free(reste);
 		reste = ft_strjoin(reste, str);
-		while (reste[j])
-		{
-			// printf("\nreste[%d] = %c\n", j, reste[j]);
-			if (reste[j] == '\n')
-			{
-				temp = reste;
-				// printf("\n trmp : %s\n", temp);
-				reste = substr(reste, j + 1, ft_strlen(reste + j + 1));
-				// temp[j] = '\n';
-				temp[j + 1] = '\0';
-				// printf("\n%s", reste);
-				return (temp);
-			}
-			flag = 1;
-			j++;
-		}
+		function(&reste, &temp, &j);
+		if (temp != NULL)
+			return (temp);
 	}
-
+	// printf("\nreste : %s",reste);
 	free(str);
-		// reste = ft_strjoin(reste, str);
-	j = 0;
-	while (reste[j])
-		{
-			// printf("\nreste[%d] = %c\n", j, reste[j]);
-			if (reste[j] == '\n')
-			{
-				// reste ="y\ntesttest" reste[0]='y' reste[1]='\n' temp="y\ntesttest" reste="testest" temp="y\n"
-				temp = reste;
-				reste = substr(reste, j + 1, ft_strlen(reste + j));
-				// temp[j] = '\n';
-				temp[j + 1] = '\0';
-				return (temp);
-			}
-			flag = 1;
-			j++;
-		}
-	// printf("\n%d %s\n", flag, reste);
-	// if (flag == 1)
-	// 	return (reste);
-	// printf("%s", reste);
+	function(&reste, &temp, &j);
+
+	// printf("\nreste : %s\n", reste);
+	if (temp != NULL)
+			return (temp);
 	if (j == ft_strlen(reste))
 	{
 		nstr = ft_strdup(reste);
 		reste = NULL;
 		return (nstr);
 	}
-	return (reste);
+	return (NULL);
 }
 
 int main()
@@ -137,11 +128,13 @@ int main()
 	}
 	// LECTURE
 	// gnl(0, "01234567890123456789012345678901234567890\n")
-	printf("\n----\n%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
-	// printf("%s", get_next_line(fd));
-	// printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+//est ce que je doit ajouter un retour a ligne dans la derniere ligne?
 	return (0);
 }

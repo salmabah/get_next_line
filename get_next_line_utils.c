@@ -6,40 +6,11 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 02:10:23 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/16 01:54:07 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/21 00:52:51 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	char	*sub;
-	int		i;
-
-	i = 0;
-	if (!s)
-		return (0);
-	if (ft_strlen(s) < start + len)
-		len = ft_strlen(s) - start;
-	if (start >= ft_strlen(s))
-		return (ft_strdup(""));
-	sub = (char *)malloc(sizeof(char) * (len + 1));
-	if (!sub)
-		return (0);
-	if (len < (ft_strlen(s) - start))
-	{
-		while (len > 0)
-		{
-			sub[i++] = s[start++];
-			len--;
-		}
-		sub[i] = '\0';
-	}
-	else
-		sub = ft_memcpy(sub, s + start, len);
-	return (sub);
-}
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
