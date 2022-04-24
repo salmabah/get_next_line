@@ -6,12 +6,12 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/13 18:40:20 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/22 03:41:07 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/24 22:53:41 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <string.h>
+
 
 void split(char *str)
 {
@@ -52,19 +52,12 @@ char	*substr(char const *s, unsigned int start, size_t len)
 	return (sub);
 }
 
-void	function(char **reste, char **temp, int *i)
+void	function(char **reste, char **temp, size_t *i)
 {
-	// char	*temp;
-	// int i;
-
-	// i = 0;
-	// j = &i;
 	*i = 0;
 	*temp = NULL;
-	// printf("restee : %s\n", *reste);
 	while (*(*reste + *i) != '\0')
 	{
-	// {printf("--%c-- i = %d--\n", *reste[i], i);
 		if (*(*reste + *i) == '\n')
 		{
 			*temp = *reste;
@@ -74,19 +67,21 @@ void	function(char **reste, char **temp, int *i)
 			break ;
 		}
 		(*i)++;
-		// printf("\nj : %d\n", *j);
 	}
 }
 
 char *get_next_line(int fd)
 {
 	char		*temp = NULL;
-	int			j;
+	size_t			j;
 	char		*str;
 	static char *reste;
 	int			ret;
-	char		*nstr;
+	// char		*nstr;
+	char		*ptr;
 
+	if (fd == -1)
+		return (NULL);
 	str = malloc(BUFFER_SIZE + 1);
 	j = 0;
 	if (reste == NULL)
@@ -94,23 +89,25 @@ char *get_next_line(int fd)
 	while ((ret = read(fd, str, BUFFER_SIZE)))
 	{
 		str[ret] = '\0';
+		ptr = reste;
+		free(ptr); //why
+		ptr = 0;
 		reste = ft_strjoin(reste, str);
 		function(&reste, &temp, &j);
 		if (temp != NULL)
 			return (temp);
 	}
-	// printf("\nreste : %s",reste);
 	free(str);
+	str = 0;
 	function(&reste, &temp, &j);
-
-	// printf("\nreste : %s\n", reste);
 	if (temp != NULL)
 			return (temp);
 	if (j == ft_strlen(reste))
 	{
-		nstr = ft_strdup(reste);
+		ptr = ft_strdup(reste);
+		// free(reste);
 		reste = NULL;
-		return (nstr);
+		return (ptr);
 	}
 	return (NULL);
 }
