@@ -6,7 +6,7 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/13 18:40:20 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/24 22:53:41 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/26 03:15:04 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,91 +25,127 @@ void split(char *str)
 
 char	*substr(char const *s, unsigned int start, size_t len)
 {
-	char	*sub;
-	int		i;
+	char	*str;
+	size_t	i;
 
-	i = 0;
 	if (!s)
-		return (0);
-	if (ft_strlen(s) < start + len)
-		len = ft_strlen(s) - start;
-	if (start >= ft_strlen(s))
 		return (ft_strdup(""));
-	sub = (char *)malloc(sizeof(char) * (len + 1));
-	if (!sub)
-		return (0);
-	if (len < (ft_strlen(s) - start))
+	if (ft_strlen(s) < start)
+		return (ft_strdup(""));
+	if (len > ft_strlen(s) - start)
+		len = ft_strlen(s) - start;
+	str = malloc(len + 1);
+	if (!str)
+		return (NULL);
+	i = 0;
+	while (i < len)
 	{
-		while (len > 0)
-		{
-			sub[i++] = s[start++];
-			len--;
-		}
-		sub[i] = '\0';
+		str[i] = s[start];
+		i++;
+		start++;
 	}
-	else
-		sub = ft_memcpy(sub, s + start, len);
-	return (sub);
+	str[i] = '\0';
+	return (str);
 }
 
-void	function(char **reste, char **temp, size_t *i)
+void	splitline(char **reste, char **temp, size_t *i)
 {
-	*i = 0;
-	*temp = NULL;
-	while (*(*reste + *i) != '\0')
+	char *temp1 = *temp;
+	char *reste1 = *reste;
+	int i1 = *i;
+
+	i1 = 0;
+	temp1 = NULL;
+	while (reste1[i1] != '\0')
 	{
-		if (*(*reste + *i) == '\n')
+		if (reste1[i1] == '\n')
 		{
-			*temp = *reste;
+			temp1 = reste1;
 			// i think free(reste);
-			*reste = substr(*reste, *i + 1, ft_strlen(*reste + *i));
-			*(*temp + *i + 1) = '\0';
+			
+			reste1 = substr(reste1, i1 + 1, ft_strlen(reste1) -i1 + 1);
+			if(reste1[0] == 0)
+			{
+				free(reste1);
+				reste1 = 0;
+			}
+			temp1[i1 + 1] = '\0';
 			break ;
 		}
-		(*i)++;
+		i1++;
 	}
+	 *i = i1;
+	 *reste = reste1;
+	 *temp = temp1;
+	
+}
+
+char *createbuffer(int fd, char *reste, char *str, char *ligne)
+{
+	int		ret;
+	char	*ptr;
+	size_t	j;
+
+	ret = 1;
+	j = 0;
+	if (reste == NULL)
+		reste = ft_strdup("");
+	while (ret)
+	{
+		ret = read(fd, str, BUFFER_SIZE);
+		if (ret == 0)
+			return (reste);
+		else if (ret == -1)
+			return (NULL);
+		str[ret] = '\0';
+		ptr = reste;
+		reste = ft_strjoin(reste, str);
+		free(ptr);
+		ptr = 0;
+		splitline(&reste, &ligne, &j);
+		if (ligne != NULL)
+			break;
+			// return (temp);
+	}
+	return (reste);
 }
 
 char *get_next_line(int fd)
 {
-	char		*temp = NULL;
+	char		*ligne;
 	size_t			j;
 	char		*str;
 	static char *reste;
-	int			ret;
-	// char		*nstr;
 	char		*ptr;
 
-	if (fd == -1)
+	ligne = 0;
+	if (fd < -1 || BUFFER_SIZE <= 0)
 		return (NULL);
-	str = malloc(BUFFER_SIZE + 1);
-	j = 0;
-	if (reste == NULL)
-		reste = ft_strdup("");
-	while ((ret = read(fd, str, BUFFER_SIZE)))
-	{
-		str[ret] = '\0';
-		ptr = reste;
-		free(ptr); //why
-		ptr = 0;
-		reste = ft_strjoin(reste, str);
-		function(&reste, &temp, &j);
-		if (temp != NULL)
-			return (temp);
-	}
+	str = malloc(sizeof(char) * BUFFER_SIZE + 1);
+	if (!str)
+		return (NULL);
+
+	reste = createbuffer(fd, reste, str, ligne);	
 	free(str);
 	str = 0;
-	function(&reste, &temp, &j);
-	if (temp != NULL)
-			return (temp);
+	if (ligne != NULL)
+		return (ligne);
+	splitline(&reste, &ligne, &j);
+	if (ligne != NULL)
+		return (ligne);
+
 	if (j == ft_strlen(reste))
 	{
-		ptr = ft_strdup(reste);
-		// free(reste);
+		ptr = reste;
 		reste = NULL;
+		if(ft_strlen(ptr) == 0)
+		{
+			free(ptr);
+			ptr = 0;
+		}
 		return (ptr);
 	}
-	return (NULL);
+	return (reste);
 }
 
 int main()
@@ -125,13 +161,11 @@ int main()
 	}
 	// LECTURE
 	// gnl(0, "01234567890123456789012345678901234567890\n")
+	// fd = 0;
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
+	
+	
 //est ce que je doit ajouter un retour a ligne dans la derniere ligne?
 	return (0);
 }

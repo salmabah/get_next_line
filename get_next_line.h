@@ -6,7 +6,7 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 16:55:13 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/20 03:22:20 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/26 01:24:42 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,3 +25,5 @@ char	*ft_strdup(const char *s1);
 
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 size_t	ft_strlen(const char *str);
+
+char	*ft_strchr(const char *str, int c);
