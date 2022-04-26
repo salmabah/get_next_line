@@ -6,7 +6,7 @@
 /*   By: sbahraou <sbahraou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 02:10:23 by sbahraou          #+#    #+#             */
-/*   Updated: 2022/04/25 15:59:41 by sbahraou         ###   ########.fr       */
+/*   Updated: 2022/04/26 09:34:52 by sbahraou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,17 +92,27 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-void	*ft_memcpy(void *dest, const void *src, size_t n)
+char	*substr(char const *s, unsigned int start, size_t len)
 {
+	char	*str;
 	size_t	i;
 
+	if (!s)
+		return (ft_strdup(""));
+	if (ft_strlen(s) < start)
+		return (ft_strdup(""));
+	if (len > ft_strlen(s) - start)
+		len = ft_strlen(s) - start;
+	str = malloc(len + 1);
+	if (!str)
+		return (NULL);
 	i = 0;
-	if (!dest && !src)
-		return (0);
-	while (i < n)
+	while (i < len)
 	{
-		((unsigned char *)dest)[i] = ((unsigned char *)src)[i];
+		str[i] = s[start];
 		i++;
+		start++;
 	}
-	return (dest);
+	str[i] = '\0';
+	return (str);
 }
